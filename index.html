@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicago Crime Trends | Interactive Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+    <div id="container">
+        <h1>Chicago Crime Explorer (Recent 50k Entries)</h1>
+        
+        <div id="chart-container">
+            </div>
+        
+        <p class="figure-caption">
+            <em>Figure 1: Our interactive scatter plot showing recent Chicago crimes. Use the mouse wheel to zoom into dates and hover over points to observe details.</em>
+        </p>
+
+        <div id="tooltip" class="hidden">
+            <p><strong>Crime:</strong> <span id="crime-type"></span></p>
+            <p><strong>Date:</strong> <span id="crime-date"></span></p>
+            <p><strong>Arrested:</strong> <span id="crime-arrest"></span></p>
+        </div>
+
+        <hr>
+
+        <section id="write-up">
+            <h2>Project Overview & Design Rationale</h2>
+            
+            <h3>Dataset Introduction</h3>
+            <p>
+                Our visualization dives into the <strong>Chicago Crimes dataset</strong>, focusing primarily on a subset of the 50,000 most recent reported incidents. 
+                By focusing on the most recent data, we were able to provide a more contemporary look at urban safety patterns while ensuring that our web application remains 
+                performant and responsive for a high amount of data points. The data was sourced directly from the Chicago Police Department’s CLEAR system via the City of Chicago Data Portal.
+            </p>
+
+            <h3>What This Visualization Reveals</h3>
+            <p>
+                As opposed to being just a tool for static statistical analysis, we chose to go about it more in terms of exploration. 
+                By using features like the zoom and highlight, users can immediately spot trends such as the constant, 
+                daily density of crimes like "Theft" and "Battery" which take place across a city setting as opposed to a more rare 
+                occurrence of "Arson" or "Homicide." The tool also allows users to quickly check when an arrest was made 
+                during a specific point in time, visually revealing how immediate arrests can vary drastically depending on the category of the crime.
+            </p>
+
+            <h3>Design Decisions & Interaction (Category II)</h3>
+            <p>
+                For Category II, what I chose to do was to create an interface that makes the "Details-on-Demand" and "Exploration" much more intuitive. 
+                This is how I went about the implementation:
+            </p>
+            <ul>
+                <li><strong>Visual Encoding:</strong> I chose a temporal scatter plot, which maps <em>Date</em> to the X-axis and <em>Primary Crime Type</em> to the Y-axis. This allows for me to effectively highlight the frequency/density of particular crime categories over time.</li>
+                <li><strong>Panning & Zooming:</strong> To go about the abundance of data points (we chose ~50,000), I implemented a scroll-to-zoom feature. This allows users to move from a month-long overview to a hyper-focused view of particular days or hours.</li>
+                <li><strong>Selection & Highlighting:</strong> For the visual feedback portion, I implemented a "pop" effect, where hovering over a data point changes the data point color to orange increases the size of the circle. This allows me to bring the element "to the front" and make it more visually prominent.</li>
+                <li><strong>Annotation (Narrative Features):</strong> I added a vertical dashed line (crosshair) which follows the user's cursor. My goal was to have this act as a guide to help users accurately align specific data points with the dates on the X-axis.</li>
+            </ul>
+
+            <h3>Development Process</h3>
+            <p>
+                <li>The project was a collaborative effort, and we split up the work evenly from the beginning. I (Jay) focused on Category I (Data Filtering and Connectivity), while I (Aadhitya) handled the implementation 
+                of visual encodings and interactive elements. </li>
+                <strong>Total Cumulative Time Spent:</strong> Approximately 15 person-hours. 
+                Perhaps the most time-consuming aspect was fine-tuning the D3.js zoom behavior to make sure that it keeps pace with a large dataset.
+            </p>
+
+            <h3>AI Usage Summary</h3>
+            <p>
+                I chose to use <strong>Gemini</strong> to help with debugging my d3.js code, especially scoping issues that was related to asynchronous data loading.
+                I also used it to refine the logic for the date parsing, as well as to help structure the CSS layout for the write-up.
+            </p>
+
+            <h3>References</h3>
+            <ul>
+                <li>Data Source: <a href="https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2" target="_blank">Chicago Data Portal - Crimes 2001 to Present</a></li>
+                <li>Library: <a href="https://d3js.org/" target="_blank">D3.js Documentation</a></li>
+            </ul>
+        </section>
+    </div>
+
+    <script src="js/interactions.js"></script>
+</body>
+</html>
