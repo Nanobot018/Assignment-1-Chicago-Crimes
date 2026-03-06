@@ -1,65 +1,69 @@
 #chart-container {
-    width: 100%;
-    /* REMOVE the fixed height completely */
-    /* height: 500px;  <-- Delete lines like this */
-    margin-bottom: 20px; /* Adds space before the caption */
-    overflow: visible;
+  width: 100%;
+  /* REMOVE the fixed height completely */
+  /* height: 500px;  <-- Delete lines like this */
+  margin-bottom: 20px; /* Adds space before the caption */
+  overflow: visible;
 }
 
 /* Let's also add some breathing room to the caption itself */
 .figure-caption {
-    margin-top: 30px;
-    margin-bottom: 40px;
-    color: #555;
-    font-size: 0.95em;
+  margin-top: 30px;
+  margin-bottom: 40px;
+  color: #555;
+  font-size: 0.95em;
 }
 
 /* Tooltip Styling */
 #tooltip {
-    position: absolute;
-    padding: 10px;
-    background: white;
-    border: 1px solid #333;
-    pointer-events: none; /* Important: prevents tooltip from flickering */
-    font-size: 12px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  position: absolute;
+  padding: 10px;
+  background: white;
+  border: 1px solid #333;
+  pointer-events: none; /* Important: prevents tooltip from flickering */
+  font-size: 12px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 /* Highlighting (Category II) */
 .dot {
-    transition: r 0.2s, fill 0.2s; /* Smooth expansion on hover */
+  transition:
+    r 0.2s,
+    fill 0.2s; /* Smooth expansion on hover */
+  mix-blend-mode: multiply;
 }
 
 .dot:hover {
-    fill: orange !important;
-    cursor: pointer;
+  fill: orange !important;
+  cursor: pointer;
 }
 
 svg {
-    overflow: visible !important;
+  overflow: visible !important;
 }
 circle {
-    pointer-events: all;
+  pointer-events: all;
 }
 
 #write-up {
-    max-width: 800px;
-    margin: 40px auto;
-    line-height: 1.6;
-    font-family: sans-serif;
-    color: #333;
+  max-width: 800px;
+  margin: 40px auto;
+  line-height: 1.6;
+  font-family: sans-serif;
+  color: #333;
 }
 
-#write-up h2, #write-up h3 {
-    color: #2c3e50;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+#write-up h2,
+#write-up h3 {
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
 }
 
 #write-up ul {
-    padding-left: 20px;
+  padding-left: 20px;
 }
