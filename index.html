@@ -67,56 +67,82 @@
 
             <h3>What This Visualization Reveals</h3>
             <p>
-                As opposed to being just a tool for static statistical analysis, we chose to go about it more in terms
+            <p>
+                As opposed to being just a tool for static statistical analysis, we chose to design this visualization
+                more in terms
                 of exploration.
-                By using features like the zoom and highlight, users can immediately spot trends such as the constant,
-                daily density of crimes like "Theft" and "Battery" which take place across a city setting as opposed to
-                a more rare
-                occurrence of "Arson" or "Homicide." The tool also allows users to quickly check when an arrest was made
-                during a specific point in time, visually revealing how immediate arrests can vary drastically depending
-                on the category of the crime.
+                By using features like the zoom and temporal scatter plot, users can immediately spot trends such as the
+                constant, daily density of common crimes like "Theft" and "Battery," as opposed to
+                a more rare occurrence of "Arson" or "Homicide."
+                <br><br>
+
+                By utilizing the interactive brushing and its dynamic linked views, users can isolate any chaotic
+                cluster
+                of data points on the scatter plot and immediately translate that timeframe into a temporal breakdown
+                bar chart.
             </p>
 
-            <h3>Design Decisions & Interaction (Category II)</h3>
+            <h3>Design Decisions & Interaction</h3>
             <p>
-                For Category II, what I chose to do was to create an interface that makes the "Details-on-Demand" and
-                "Exploration" much more intuitive.
-                This is how I went about the implementation:
+                We implemented interaction techniques from both Category I and
+                Category II to make the visualization more interactive and engaging:
             </p>
             <ul>
-                <li><strong>Visual Encoding:</strong> I chose a temporal scatter plot, which maps <em>Date</em> to the
-                    X-axis and <em>Primary Crime Type</em> to the Y-axis. This allows for me to effectively highlight
-                    the frequency/density of particular crime categories over time.</li>
-                <li><strong>Panning & Zooming:</strong> To go about the abundance of data points (we chose ~50,000), I
+                <li><strong>Visual Encoding:</strong> We chose a temporal scatter plot, which maps <em>Date</em> to the
+                    X-axis and <em>Primary Crime Type</em> to the Y-axis. This allows us to effectively highlight
+                    the frequency and density of particular crime categories over time.</li>
+                <li><strong>Panning & Zooming:</strong> To handle the abundance of data points (we chose ~50,000), we
                     implemented a scroll-to-zoom feature. This allows users to move from a month-long overview to a
                     hyper-focused view of particular days or hours.</li>
-                <li><strong>Selection & Highlighting:</strong> For the visual feedback portion, I implemented a "pop"
-                    effect, where hovering over a data point changes the data point color to orange increases the size
-                    of the circle. This allows me to bring the element "to the front" and make it more visually
-                    prominent.</li>
-                <li><strong>Annotation (Narrative Features):</strong> I added a vertical dashed line (crosshair) which
-                    follows the user's cursor. My goal was to have this act as a guide to help users accurately align
+                <li><strong>Selection & Highlighting:</strong> Initially, we added a pop-up tooltip effect for visual
+                    feedback, but we found that binding mouseover events to 50k data points added too much latency and
+                    clutter. We removed the tooltips and instead built this into the Brushing & Linking feature, where
+                    selected data points are highlighted and detailed in the dynamic table below the chart.</li>
+                <li><strong>Annotation (Narrative Features):</strong> We added a vertical dashed line (crosshair) which
+                    follows the user's cursor. Our goal was to have this act as a guide to help users accurately align
                     specific data points with the dates on the X-axis.</li>
+                <li><strong>Brushing and Link-By-Queries:</strong> Users can click and drag over clusters of crimes
+                    to draw a custom filter rectangle directly on the scatter plot. All data points inside the drawn
+                    brush are dynamically selected and passed to the linked queries below the chart.</li>
+                <li><strong>Dynamic Filters & Link-By-Queries:</strong> The active brush selection queries the
+                    dataset and passes it to two dynamic elements below the chart. First, a data table reveals the exact
+                    'Date', 'Crime Type', and 'Arrest Status' for up to 100 of the brushed datapoints (capped to
+                    maintain performance). Second, a "Time of Day" breakdown bar chart calculates and translates the
+                    dense visual data into readable temporal statistics.</li>
             </ul>
 
             <h3>Development Process</h3>
             <p>
-                <li>The project was a collaborative effort, and we split up the work evenly from the beginning. Abhijay
-                    focused on Category I (Data Filtering and Connectivity), while Aadhitya handled the implementation
-                    of visual encodings and interactive elements. </li>
-                <strong>Total Cumulative Time Spent:</strong> Approximately 15 person-hours.
-                Perhaps the most time-consuming aspect was fine-tuning the D3.js zoom behavior to make sure that it
+                <strong>The project was a collaborative effort. We split up the work evenly from the beginning.
+                    Abhijay handled Category I, while Aadhitya handled Category II. </strong>
+                <br><br>
+                <strong>Total Cumulative Time Spent:</strong> Approximately 15 hours.
+                <br><br>
+                <strong>Aadhitya:</strong> Perhaps the most time-consuming aspect was fine-tuning the D3.js zoom
+                behavior to make sure
+                that it
                 keeps pace with a large dataset.
+                <br>
+                <strong>Abhijay:</strong> I found the most challenging part was implementing the brushing feature on top
+                of the
+                existing scatter plot. I ran into issues with performance, as well as clashing behavior between the
+                brushing and left-click panning features. I ended up disabling the panning feature but keeping the
+                zooming feature enabled to avoid any potential confusion. <br>
+                I also had to implement custom features that would utilize the brushing, and found these to be
+                challenging and novel since in this use case, the brushing is kind of pointless without the table and
+                time of day bar chart.
             </p>
 
             <h3>AI Usage Summary</h3>
             <p>
-                Aadhitya: I chose to use <strong>Gemini</strong> to help with debugging my d3.js code, especially
-                scoping issues that was related to asynchronous data loading.
+                <strong>Aadhitya:</strong> I chose to use Gemini to help with debugging my d3.js code,
+                especially for scoping issues that were related to asynchronous data loading.
                 I also used it to refine the logic for the date parsing, as well as to help structure the CSS layout for
                 the write-up.
-
-                Abhijay: I used Gemini for brainstorming and debugging.
+                <br>
+                <strong>Abhijay:</strong> I used Gemini for brainstorming, helping me find ideas for what to do with the
+                brushing selection. I also used it to help me debug and refine the performance of the website, as well
+                as proofread my part of the write-up for typos or errors.
             </p>
 
             <h3>References</h3>
