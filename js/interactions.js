@@ -77,43 +77,165 @@ d3.csv("data/recent_crimes.csv").then((data) => {
   const zoom = d3
     .zoom()
     .scaleExtent([0.5, 50]) // High zoom to see specific days
+    .filter(event => {
+      // disabled panning to allow for easier brushing interaction
+      if (event.type === 'mousedown') return false;
+      return !event.ctrlKey && !event.button;
+    })
     .on("zoom", (event) => {
       const newX = event.transform.rescaleX(x);
       xAxisGroup.call(d3.axisBottom(newX));
       dots.attr("cx", (d) => newX(d.date));
+      if (typeof updateBrushSelection === 'function') updateBrushSelection();
     });
 
   svg.call(zoom);
 
-  // 7. TOOLTIP (Details-on-demand - Category II)
-  dots
-    .on("mouseover", function (event, d) {
-      // 1. Visual Selection: Change color and size
-      d3.select(this)
-        .raise() // Brings the hovered dot to the front
-        .attr("r", 8)
-        .style("fill", "#ff8c00") // Bright Orange
-        .style("opacity", 1);
+  // brushing, dynamic filters & queries (Category I)
+  function updateBrushSelection() {
+    const brushNode = svg.select(".brush").node();
+    const tableContainer = d3.select("#selected-crimes-container");
+    const tbody = d3.select("#selected-crimes-table tbody");
+    const countSpan = d3.select("#selected-count");
 
-      // 2. Details-on-Demand: Tooltip
-      const tooltip = d3.select("#tooltip");
-      tooltip
-        .classed("hidden", false)
-        .style("left", event.pageX + 10 + "px")
-        .style("top", event.pageY - 10 + "px");
+    if (!brushNode) return;
+    const selection = d3.brushSelection(brushNode);
+    if (!selection) {
+      dots.classed("brushed", false)
+        .style("fill", "steelblue")
+        .style("opacity", 0.2);
+      tableContainer.style("display", "none");
+      return;
+    }
+    const [[x0, y0], [x1, y1]] = selection;
+    const currentX = d3.zoomTransform(svg.node()).rescaleX(x);
 
-      d3.select("#crime-type").text(d.primary_type);
-      d3.select("#crime-date").text(d3.timeFormat("%b %d, %H:%M")(d.date));
-      d3.select("#crime-arrest").text(d.arrest ? "Yes" : "No");
-    })
-    .on("mouseout", function () {
-      d3.select(this)
-        .attr("r", 3) // Reset size
-        .style("fill", "steelblue") // Reset color
-        .style("opacity", 0.1); // Reset opacity
+    let selectedCount = 0;
+    const selectedData = [];
 
-      d3.select("#tooltip").classed("hidden", true);
+    dots.classed("brushed", d => {
+      const cx = currentX(d.date);
+      const cy = y(d.primary_type);
+      const isSelected = (cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1);
+
+      if (isSelected) {
+        selectedCount++;
+        if (selectedData.length < 100) {
+          selectedData.push(d);
+        }
+      }
+      return isSelected;
     });
+
+    dots.style("fill", function () { return d3.select(this).classed("brushed") ? "brown" : "steelblue"; })
+      .style("opacity", function () { return d3.select(this).classed("brushed") ? 1 : 0.05; });
+
+    // update the table with selected data
+    if (selectedCount > 0) {
+      tableContainer.classed("hidden-element", false);
+      countSpan.text(selectedCount + (selectedCount > 100 ? " (showing first 100)" : ""));
+
+      tbody.html(""); // clear old rows
+
+      selectedData.forEach(d => {
+        const row = tbody.append("tr");
+        row.append("td").text(d.date.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' }));
+        row.append("td").text(d.primary_type);
+        row.append("td").text(d.arrest ? "Yes" : "No");
+      });
+
+      // update the bar chart with the selecteddata
+      updateTimeChart(selectedData);
+    } else {
+      tableContainer.classed("hidden-element", true);
+      d3.select("#time-chart-container").classed("hidden-element", true);
+    }
+  }
+
+  // TIME OF DAY BAR CHART WITH BRUSHING
+  const barMargin = { top: 20, right: 20, bottom: 40, left: 40 };
+  const barWidth = 600 - barMargin.left - barMargin.right;
+  const barHeight = 200 - barMargin.top - barMargin.bottom;
+
+  const barSvg = d3.select("#time-barchart")
+    .append("svg")
+    .attr("width", barWidth + barMargin.left + barMargin.right)
+    .attr("height", barHeight + barMargin.top + barMargin.bottom)
+    .append("g")
+    .attr("transform", `translate(${barMargin.left},${barMargin.top})`);
+
+  // x scale (24hrs)
+  const barX = d3.scaleLinear()
+    .domain([0, 24])
+    .range([0, barWidth]);
+
+  barSvg.append("g")
+    .attr("transform", `translate(0,${barHeight})`)
+    .call(d3.axisBottom(barX).tickValues(d3.range(0, 25, 2)).tickFormat(d => d + "h"));
+
+  // y scale
+  const barY = d3.scaleLinear().range([barHeight, 0]);
+  const barYAxis = barSvg.append("g");
+
+  // x label
+  barSvg.append("text")
+    .attr("text-anchor", "middle")
+    .attr("x", barWidth / 2)
+    .attr("y", barHeight + barMargin.bottom - 5)
+    .text("Hour of Day")
+    .style("font-size", "12px");
+
+  function updateTimeChart(data) {
+    d3.select("#time-chart-container").classed("hidden-element", false);
+
+    // tally up the hours
+    const hourCounts = new Array(24).fill(0);
+
+    // check which dots are currently brushed / selected
+    svg.selectAll(".dot.brushed").each(function (d) {
+      const hour = d.date.getHours();
+      hourCounts[hour]++;
+    });
+
+    const plotData = hourCounts.map((count, hour) => ({ hour, count }));
+
+    // y scale
+    const maxCount = d3.max(plotData, d => d.count);
+    barY.domain([0, maxCount > 0 ? maxCount : 1]);
+
+    // y axis
+    const yAxisConfig = d3.axisLeft(barY).ticks(Math.min(5, maxCount)).tickFormat(d3.format("d"));
+    barYAxis.transition().duration(200).call(yAxisConfig);
+
+    // bind data to bars
+    const bars = barSvg.selectAll(".bar")
+      .data(plotData);
+
+    // enter + update
+    bars.enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("fill", "brown")
+      .merge(bars)
+      .transition().duration(200)
+      .attr("x", d => barX(d.hour))
+      .attr("y", d => barY(d.count))
+      .attr("width", (barWidth / 24) - 2)
+      .attr("height", d => barHeight - barY(d.count));
+
+    // remove old bars
+    bars.exit().remove();
+  }
+
+  const brush = d3.brush()
+    .extent([[0, 0], [chartWidth, chartHeight]])
+    .on("end", updateBrushSelection);
+
+  const brushGroup = svg.append("g")
+    .attr("class", "brush")
+    .call(brush);
+
+  dotGroup.raise();
 
   // Create the vertical line (initially hidden)
   const vLine = svg

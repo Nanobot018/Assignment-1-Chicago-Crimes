@@ -22,6 +22,28 @@
                 dates and hover over points to observe details.</em>
         </p>
 
+        <!-- table for the brushed points -->
+        <div id="selected-crimes-container" class="hidden-element">
+            <h3>Selected Crimes (<span id="selected-count">0</span>)</h3>
+            <table id="selected-crimes-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Primary Type</th>
+                        <th>Arrest Made</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- bar chart (with time of day breakdown) -->
+        <div id="time-chart-container" class="hidden-element">
+            <h3>Time of Day Breakdown</h3>
+            <div id="time-barchart"></div>
+        </div>
+
         <div id="tooltip" class="hidden">
             <p><strong>Crime:</strong> <span id="crime-type"></span></p>
             <p><strong>Date:</strong> <span id="crime-date"></span></p>

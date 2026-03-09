@@ -2,7 +2,8 @@
   width: 100%;
   /* REMOVE the fixed height completely */
   /* height: 500px;  <-- Delete lines like this */
-  margin-bottom: 20px; /* Adds space before the caption */
+  margin-bottom: 20px;
+  /* Adds space before the caption */
   overflow: visible;
 }
 
@@ -20,7 +21,8 @@
   padding: 10px;
   background: white;
   border: 1px solid #333;
-  pointer-events: none; /* Important: prevents tooltip from flickering */
+  pointer-events: none;
+  /* Important: prevents tooltip from flickering */
   font-size: 12px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
 }
@@ -33,7 +35,8 @@
 .dot {
   transition:
     r 0.2s,
-    fill 0.2s; /* Smooth expansion on hover */
+    fill 0.2s;
+  /* Smooth expansion on hover */
   mix-blend-mode: multiply;
 }
 
@@ -45,6 +48,7 @@
 svg {
   overflow: visible !important;
 }
+
 circle {
   pointer-events: all;
 }
@@ -66,4 +70,56 @@ circle {
 
 #write-up ul {
   padding-left: 20px;
+}
+
+/* Category I: Dynamic Layout Styles */
+
+.hidden-element {
+  display: none !important;
+}
+
+#selected-crimes-container {
+  margin-top: 20px;
+  font-family: sans-serif;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#selected-crimes-container h3,
+#time-chart-container h3 {
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+#selected-crimes-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#selected-crimes-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #f9f9f9;
+  z-index: 1;
+}
+
+#selected-crimes-table tr {
+  border-bottom: 2px solid #ccc;
+}
+
+#selected-crimes-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+#selected-crimes-table th,
+#selected-crimes-table td {
+  padding: 8px 10px;
+}
+
+#time-chart-container {
+  margin-top: 40px;
+  font-family: sans-serif;
 }
